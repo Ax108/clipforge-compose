@@ -52,7 +52,7 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - /opt/clipforge/cookies.txt:/app/cookies.txt:ro
+      - /opt/clipforge/cookies.txt:/app/cookies.txt
 
   redis:
     image: redis:7-alpine
