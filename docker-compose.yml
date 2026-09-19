@@ -51,6 +51,8 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+    volumes:
+      - /opt/clipforge/cookies.txt:/app/cookies.txt:ro
 
   redis:
     image: redis:7-alpine
