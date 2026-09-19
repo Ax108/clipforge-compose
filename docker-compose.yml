@@ -47,7 +47,7 @@ services:
       RATE_LIMIT_EXTRACT_MAX: ${RATE_LIMIT_EXTRACT_MAX:-10}
       RATE_LIMIT_FILE_MAX: ${RATE_LIMIT_FILE_MAX:-60}
       RATE_LIMIT_JOB_READ_MAX: ${RATE_LIMIT_JOB_READ_MAX:-240}
-
+      YTDLP_PLAYER_CLIENTS: ${YTDLP_PLAYER_CLIENTS:-default,web_embedded}
     depends_on:
       redis:
         condition: service_healthy
