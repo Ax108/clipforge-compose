@@ -1,0 +1,63 @@
+services:
+  frontend:
+    build:
+      context: https://github.com/Ax108/ax-clipforge-frontend.git
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    restart: unless-stopped
+    ports:
+      - "80"
+
+  backend:
+    build:
+      context: https://github.com/Ax108/ax-clipforge-backend.git
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "5000"
+    environment:
+      PORT: ${PORT:-5000}
+      LISTEN_HOST: 0.0.0.0
+
+      PUBLIC_API_URL: ${PUBLIC_API_URL}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+
+      PROXY_URL: ${PROXY_URL:-}
+      COOKIE_FILE_PATH: ${COOKIE_FILE_PATH:-}
+      PO_TOKEN: ${PO_TOKEN:-}
+      YTDLP_BIN: ${YTDLP_BIN:-yt-dlp}
+
+      DOWNLOAD_CONCURRENCY: ${DOWNLOAD_CONCURRENCY:-1}
+      DOWNLOAD_TIMEOUT_MS: ${DOWNLOAD_TIMEOUT_MS:-600000}
+
+      TMP_MAX_AGE_MS: ${TMP_MAX_AGE_MS:-900000}
+      KEEP_TMP: ${KEEP_TMP:-false}
+      TMP_DIR: /tmp/clipforge
+
+      REDIS_URL: redis://redis:6379
+      JOB_TTL_MS: ${JOB_TTL_MS:-86400000}
+      CACHE_TTL_MS: ${CACHE_TTL_MS:-86400000}
+      CACHE_MAX_BYTES: ${CACHE_MAX_BYTES:-2147483648}
+
+      TRUST_PROXY: ${TRUST_PROXY:-true}
+
+      RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED:-true}
+      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-900000}
+      RATE_LIMIT_EXTRACT_MAX: ${RATE_LIMIT_EXTRACT_MAX:-10}
+      RATE_LIMIT_FILE_MAX: ${RATE_LIMIT_FILE_MAX:-60}
+      RATE_LIMIT_JOB_READ_MAX: ${RATE_LIMIT_JOB_READ_MAX:-240}
+
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
